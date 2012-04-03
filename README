@@ -1,0 +1,45 @@
+1) Create a simple thrift file Calc.thrift
+2) Run command thrift --gen java Calc.thrift  this will generate client and server interfaces for java. We will use java for server side.
+3) Create a new Java Project. 
+4) use Calculator.java,(also other java files ) generated in Step 2  in this project
+5) Create CalculatorImpl.java that would implement Calculator.Iface from Calculator.java
+6) Our thrift service is ready, we need to start serving requests now
+7) Create a file Server.java.
+8) Add code that is similar to the following in the main  function
+
+		TServerSocket serverTransport = new TServerSocket(8888);
+		Calculator.Processor processor  = new Calculator.Processor(new CaculatorImpl());
+		TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
+		System.out.println("Starting server on port 8888" );
+		//start serving
+        server.serve();
+        
+ 9) Run the program the server is ready
+ 
+ 10) Now create the client using thrift --gen php Calc.thrift (we will use php as a client)
+ 11) create folder thiftdemo at /var/www/thriftdemo
+ 12) create index.phpo in /var/ww/thriftdemo
+ 13) copy thrift php source files(in thrift folder ,go to lib/php and copy src  to /var/www/thriftdemo) in /var/ww/thiftdemo
+ 14) now create a folder packages in /var/www/thriftdemo/src/packages
+ 15) copy the generated calc folder to /var/www/thriftdemo/src/packages
+ 16) add the following to index.php
+ <?php
+  $GLOBALS['THRIFT_ROOT'] = 'src';
+    require_once $GLOBALS['THRIFT_ROOT'].'/Thrift.php';
+    require_once $GLOBALS['THRIFT_ROOT'].'/protocol/TBinaryProtocol.php';
+    require_once $GLOBALS['THRIFT_ROOT'].'/transport/TSocket.php';
+    require_once $GLOBALS['THRIFT_ROOT'].'/transport/THttpClient.php';
+    require_once $GLOBALS['THRIFT_ROOT'].'/transport/TBufferedTransport.php';
+    require_once $GLOBALS['THRIFT_ROOT'].'/packages/calc/Calculator.php';
+  echo "Hello \n";
+
+      $socket = new TSocket('localhost', 8888);
+      $transport = new TBufferedTransport($socket, 1024, 1024);
+      $protocol = new TBinaryProtocol($transport);
+      $client = new CalculatorClient($protocol);
+      $transport->open();
+      $add_result = $client->add(5,10);
+      echo "The result is " . $add_result;
+?>
+~    
+17) All files and folders are setup already in this project
